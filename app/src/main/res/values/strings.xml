@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyApp</string>
+    <string name ="button_text">Click to create a note</string>
+    <string name="field_hint">Write a text</string>
+</resources>

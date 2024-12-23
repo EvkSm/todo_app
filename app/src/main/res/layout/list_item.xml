@@ -4,15 +4,30 @@
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:gravity="center_vertical">
-
-    <TextView
-        android:id="@+id/itemTextView"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:text="Item Text"
-        android:textSize="18sp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/itemTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="Item Text"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="date"
+            android:text=""
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/deleteButton"
@@ -21,5 +36,13 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:text="Delete" />
+
+    <Button
+        android:id="@+id/setTimeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_toStartOf="@+id/deleteButton"
+        android:text="Set Reminder" />
 
 </RelativeLayout>

@@ -1,5 +1,5 @@
 package com.example.myapp
-// displays the list of todos
+
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,28 +9,38 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 
-class CustomAdapter(context: Context, private val items: MutableList<String>) :
-    ArrayAdapter<String>(context, 0, items) {
+
+class CustomAdapter(private val context: Context, private val items: MutableList<TodoItem>) :
+    ArrayAdapter<TodoItem>(context, 0, items) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // for each item in list
         var listItemView = convertView
         if (listItemView == null) {
             listItemView = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
         }
 
-        val currentItem = getItem(position)
+        listItemView?.apply {
+            val currentItem = getItem(position)
 
-        val itemTextView = listItemView!!.findViewById<TextView>(R.id.itemTextView)
-        itemTextView.text = currentItem
+            val itemTextView = findViewById<TextView>(R.id.itemTextView)
+            val dateTextView = findViewById<TextView>(R.id.dateTextView)
 
-        val deleteButton = listItemView.findViewById<Button>(R.id.deleteButton)
-        deleteButton.setOnClickListener {
-            items.removeAt(position)
-            notifyDataSetChanged()
-            Toast.makeText(context, "the note is deleted", Toast.LENGTH_SHORT).show()
+            itemTextView.text = currentItem?.text ?: ""
+            dateTextView.text = currentItem?.date ?: ""
+
+            val deleteButton = findViewById<Button>(R.id.deleteButton)
+            deleteButton.setOnClickListener {
+                items.removeAt(position)
+                notifyDataSetChanged()
+                Toast.makeText(context, "The note is deleted", Toast.LENGTH_SHORT).show()
+            }
+
+            val setTimeButton = findViewById<Button>(R.id.setTimeButton)
+            setTimeButton.setOnClickListener {
+                (context as? MainActivity)?.showDatePickerDialog(position)
+            }
         }
 
-        return listItemView
+        return listItemView!!
     }
 }

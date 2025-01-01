@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 
-
 class CustomAdapter(private val context: Context, private val items: MutableList<TodoItem>) :
     ArrayAdapter<TodoItem>(context, 0, items) {
 

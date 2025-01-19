@@ -29,9 +29,11 @@ class CustomAdapter(private val context: Context, private val items: MutableList
 
             val deleteButton = findViewById<Button>(R.id.deleteButton)
             deleteButton.setOnClickListener {
-                items.removeAt(position)
-                notifyDataSetChanged()
-                Toast.makeText(context, "The note is deleted", Toast.LENGTH_SHORT).show()
+                if (position >= 0 && position < items.size) {
+                    (context as? MainActivity)?.deleteTask(position)
+                } else {
+                    Toast.makeText(context, "Error: Unable to delete task :(", Toast.LENGTH_SHORT).show()
+                }
             }
 
             val setTimeButton = findViewById<Button>(R.id.setTimeButton)

@@ -1,10 +1,6 @@
-/* plans:
-1. create an edit button
-2. change the background photo
-3. add an icon
-*/
-package com.example.myapp
 
+package com.example.myapp
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -24,9 +20,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.myapp.databinding.ActivityMainBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var adapter: CustomAdapter
@@ -44,6 +43,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences("NoteData",Context.MODE_PRIVATE)
+        loadTasksFromPreferences()
+
         binding.button.setOnClickListener{
             val note = binding.userData.text.toString()
             val sharedEdit = sharedPreferences.edit()
@@ -71,11 +72,39 @@ class MainActivity : AppCompatActivity() {
                 todos.add(0, TodoItem(textFromUser, ""))
                 adapter.notifyDataSetChanged()
                 binding.userData.text.clear()
+                saveTasksToPreferences()
             } else {
                 Toast.makeText(this, "Please, enter some text :)", Toast.LENGTH_SHORT).show()
             }
         }
 
+
+    }
+    fun deleteTask(position: Int) {
+        if (position >= 0 && position < todos.size) {
+            todos.removeAt(position)
+            adapter.notifyDataSetChanged()
+            saveTasksToPreferences()
+            Toast.makeText(this, "Task deleted successfully", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveTasksToPreferences() {
+        val gson = Gson()
+        val json = gson.toJson(todos)
+        val editor = sharedPreferences.edit()
+        editor.putString("todo_list", json)
+        editor.apply()
+    }
+
+    private fun loadTasksFromPreferences() {
+        val gson = Gson()
+        val json = sharedPreferences.getString("todo_list", null)
+        if (!json.isNullOrEmpty()) {
+            val type = object : TypeToken<MutableList<TodoItem>>() {}.type
+            todos.clear()
+            todos.addAll(gson.fromJson(json, type))
+        }
     }
 
     private fun checkExactAlarmPermission() {
@@ -178,10 +207,15 @@ class MainActivity : AppCompatActivity() {
                     val dayOfMonth = datePicker.dayOfMonth
                     val hour = timePicker.hour
                     val minute = timePicker.minute
+                    val calendar = Calendar.getInstance().apply {
+                        set(year, month, dayOfMonth, hour, minute, 0)
+                    }
                     val formattedDate = "$dayOfMonth/${month + 1}/$year $hour:$minute"
-
+                    val reminderTime = calendar.timeInMillis
                     todos[position].date = formattedDate
+                    todos[position].reminderTime = reminderTime
                     adapter.notifyDataSetChanged() // refresh the view of the list
+                    saveTasksToPreferences()
                     scheduleNotification(todos[position].text, year, month, dayOfMonth, hour, minute)
                 }
             }
@@ -192,4 +226,4 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-data class TodoItem(var text: String, var date: String)
+data class TodoItem(var text: String, var date: String,var reminderTime: Long? = null)
